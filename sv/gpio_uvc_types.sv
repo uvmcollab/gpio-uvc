@@ -1,0 +1,4 @@
+`ifndef GPIO_UVC_TYPES_SV
+`define GPIO_UVC_TYPES_SV
+
+`endif // GPIO_UVC_TYPES_SV
