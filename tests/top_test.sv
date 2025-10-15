@@ -39,10 +39,13 @@ endfunction : end_of_elaboration_phase
 
 
 task top_test::run_phase(uvm_phase phase);
-  phase.raise_objection(this);
   vseq = top_test_vseq::type_id::create("vseq");
+  phase.raise_objection(this);
+  if (!(vseq.randomize())) begin
+    `uvm_fatal(get_type_name(), "Failed to randomize vseq")
+  end
   vseq.start(m_env.vsqr);
   phase.drop_objection(this);
 endtask : run_phase
 
-`endif // TOP_TEST_SV
+`endif  // TOP_TEST_SV

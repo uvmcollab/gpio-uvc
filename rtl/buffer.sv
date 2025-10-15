@@ -1,5 +1,5 @@
 module buffer #(
-  parameter int Width = 8
+  parameter int Width = 32
 )(
   input  logic             clk_i,
   input  logic             rst_i,

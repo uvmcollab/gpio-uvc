@@ -24,7 +24,7 @@ module tb;
   buffer dut (
     .clk_i (clk_i),
     .rst_i (rst_i),
-    .d_i   (),
+    .d_i   (gpio_uvc_vif.gpio_pin),
     .q_o   ()
   );
 

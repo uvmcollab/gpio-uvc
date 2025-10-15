@@ -6,7 +6,10 @@ class gpio_uvc_sequence_item extends uvm_sequence_item;
   `uvm_object_utils(gpio_uvc_sequence_item)
 
   // Transaction variables
-  rand byte            m_data;
+  rand gpio_uvc_data_t      m_gpio_pin;
+  rand gpio_uvc_item_type_e m_trans_type;
+  rand int unsigned         m_delay_duration_ps;
+  rand gpio_uvc_item_delay_e m_delay_enable;
 
   extern function new(string name = "");
 
@@ -14,6 +17,8 @@ class gpio_uvc_sequence_item extends uvm_sequence_item;
   extern function bit do_compare(uvm_object rhs, uvm_comparer comparer);
   extern function void do_print(uvm_printer printer);
   extern function string convert2string();
+
+  constraint c_delay_duration_ps {soft m_delay_duration_ps inside {[1_000 : 10_000]};}
 
 endclass : gpio_uvc_sequence_item
 
@@ -27,7 +32,10 @@ function void gpio_uvc_sequence_item::do_copy(uvm_object rhs);
   gpio_uvc_sequence_item rhs_;
   if (!$cast(rhs_, rhs)) `uvm_fatal(get_type_name(), "Cast of rhs object failed")
   super.do_copy(rhs);
-  m_data               = rhs_.m_data;
+  m_gpio_pin          = rhs_.m_gpio_pin;
+  m_trans_type        = rhs_.m_trans_type;
+  m_delay_duration_ps = rhs_.m_delay_duration_ps;
+  m_delay_enable      = rhs_.m_delay_enable;
 endfunction : do_copy
 
 
@@ -36,7 +44,10 @@ function bit gpio_uvc_sequence_item::do_compare(uvm_object rhs, uvm_comparer com
   gpio_uvc_sequence_item rhs_;
   if (!$cast(rhs_, rhs)) `uvm_fatal(get_type_name(), "Cast of rhs object failed")
   result = super.do_compare(rhs, comparer);
-  result &= (m_data               == rhs_.m_data);
+  result &= (m_gpio_pin == rhs_.m_gpio_pin);
+  result &= (m_trans_type == rhs_.m_trans_type);
+  result &= (m_delay_duration_ps == rhs_.m_delay_duration_ps);
+  result &= (m_delay_enable == rhs_.m_delay_enable);
   return result;
 endfunction : do_compare
 
@@ -51,8 +62,11 @@ function string gpio_uvc_sequence_item::convert2string();
   string s;
   s = super.convert2string();
   $sformat(s, {s, "\n", "TRANSACTION INFORMATION (GPIO_UVC):"});
-  $sformat(s, {s, "\n", "m_data = %d"}, m_data);
+  $sformat(s, {s, "\n", "m_gpio_pin = %d"}, m_gpio_pin);
+  $sformat(s, {s, "\n", "m_trans_type = %d"}, m_trans_type);
+  $sformat(s, {s, "\n", "m_delay_duration_ps = %d"}, m_delay_duration_ps);
+  $sformat(s, {s, "\n", "m_delay_enable = %d"}, m_delay_enable);
   return s;
 endfunction : convert2string
 
-`endif // GPIO_UVC_SEQUENCE_ITEM_SV
+`endif  // GPIO_UVC_SEQUENCE_ITEM_SV

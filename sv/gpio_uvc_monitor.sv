@@ -32,13 +32,16 @@ endfunction : build_phase
 
 task gpio_uvc_monitor::run_phase(uvm_phase phase);
   m_trans = gpio_uvc_sequence_item::type_id::create("m_trans");
-  //do_mon();
+  do_mon();
 endtask : run_phase
 
 
 task gpio_uvc_monitor::do_mon();
   forever begin
-    `uvm_info(get_type_name(), "PUT THE MONITOR CODE HERE", UVM_MEDIUM)
+    @(vif.gpio_pin);
+    m_trans.m_gpio_pin = vif.gpio_pin;
+    
+    `uvm_info(get_type_name(), {"\n--- MONITOR (GPIO_UVC) ---", m_trans.convert2string()}, UVM_DEBUG)
     analysis_port.write(m_trans);
   end
 endtask : do_mon
