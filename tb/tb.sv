@@ -18,19 +18,21 @@ module tb;
   end
 
   // Interface
-  gpio_uvc_if gpio_uvc_vif (clk_i);
+  gpio_uvc_if gpio_uvc_data_vif (clk_i);
+  gpio_uvc_if gpio_uvc_rst_vif (clk_i);
 
   // DUT Instantiation
   buffer dut (
     .clk_i (clk_i),
-    .rst_i (rst_i),
-    .d_i   (gpio_uvc_vif.gpio_pin),
+    .rst_i (gpio_uvc_rst_vif.gpio_pin[0]),
+    .d_i   (gpio_uvc_data_vif.gpio_pin),
     .q_o   ()
   );
 
   initial begin
     $timeformat(-12, 0, "ps", 10);
-    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_gpio_uvc_agent", "vif", gpio_uvc_vif);
+    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_gpio_uvc_data_agent", "vif", gpio_uvc_data_vif );
+    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_gpio_uvc_rst_agent", "vif", gpio_uvc_rst_vif );  
     run_test();
   end
 
