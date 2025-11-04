@@ -6,10 +6,13 @@ class gpio_uvc_sequence_item extends uvm_sequence_item;
   `uvm_object_utils(gpio_uvc_sequence_item)
 
   // Transaction variables
-  rand gpio_uvc_data_t      m_gpio_pin;
-  rand gpio_uvc_item_type_e m_trans_type;
-  rand int unsigned         m_delay_duration_ps;
-  rand gpio_uvc_item_delay_e m_delay_enable;
+  rand gpio_uvc_data_t            m_gpio_pin;  // Random data 
+  rand gpio_uvc_item_type_e       m_trans_type;  // synchronous or asynchronous
+  rand gpio_uvc_item_delay_e      m_delay_enable;  //transaction delay
+  rand int unsigned               m_delay_duration_ps;  // delay duration asyn
+  rand int unsigned               m_delay_cycles;  // number of delay cycles sync
+  rand gpio_uvc_item_align_type_e m_align_type;  // define alignment type, sync 
+
 
   extern function new(string name = "");
 
@@ -19,6 +22,8 @@ class gpio_uvc_sequence_item extends uvm_sequence_item;
   extern function string convert2string();
 
   constraint c_delay_duration_ps {soft m_delay_duration_ps inside {[1_000 : 10_000]};}
+  constraint c_delay_cycles {soft m_delay_cycles inside {[1 : 10]};}
+  constraint c_align_type {soft m_align_type inside {[0:1]};}
 
 endclass : gpio_uvc_sequence_item
 
@@ -36,6 +41,9 @@ function void gpio_uvc_sequence_item::do_copy(uvm_object rhs);
   m_trans_type        = rhs_.m_trans_type;
   m_delay_duration_ps = rhs_.m_delay_duration_ps;
   m_delay_enable      = rhs_.m_delay_enable;
+  m_delay_cycles      = rhs_.m_delay_cycles;
+  m_align_type        = rhs_.m_align_type;
+
 endfunction : do_copy
 
 
@@ -48,6 +56,9 @@ function bit gpio_uvc_sequence_item::do_compare(uvm_object rhs, uvm_comparer com
   result &= (m_trans_type == rhs_.m_trans_type);
   result &= (m_delay_duration_ps == rhs_.m_delay_duration_ps);
   result &= (m_delay_enable == rhs_.m_delay_enable);
+  result &= (m_delay_cycles == rhs_.m_delay_cycles);
+  result &= (m_align_type == rhs_.m_align_type);
+
   return result;
 endfunction : do_compare
 
@@ -66,6 +77,9 @@ function string gpio_uvc_sequence_item::convert2string();
   $sformat(s, {s, "\n", "m_trans_type = %d"}, m_trans_type);
   $sformat(s, {s, "\n", "m_delay_duration_ps = %d"}, m_delay_duration_ps);
   $sformat(s, {s, "\n", "m_delay_enable = %d"}, m_delay_enable);
+  $sformat(s, {s, "\n", "m_delay_cycles = %d"}, m_delay_cycles);
+  $sformat(s, {s, "\n", "m_align_type = %d"}, m_align_type);
+
   return s;
 endfunction : convert2string
 

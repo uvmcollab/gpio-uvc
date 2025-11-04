@@ -14,4 +14,10 @@ typedef enum {
   GPIO_UVC_ITEM_DELAY_ON
 } gpio_uvc_item_delay_e;
 
+typedef enum {
+  GPIO_UVC_ITEM_ALIGN_TYPE_FALLING, // UVC_FALLING
+  GPIO_UVC_ITEM_ALIGN_TYPE_RISING // UVC_RISING
+} gpio_uvc_item_align_type_e;
+
+
 `endif  // GPIO_UVC_TYPES_SV
