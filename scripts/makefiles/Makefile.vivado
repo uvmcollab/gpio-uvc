@@ -27,6 +27,7 @@ SCRIPTS_DIR := $(UVM_DIR)/scripts
 WDB_DIR     := $(ROOT_DIR)/wdb
 TCL_DIR     := $(SCRIPTS_DIR)/vivado
 RTL_DIR     := $(GIT_DIR)/rtl
+DPI_DIR     := $(GIT_DIR)/dpi
 
 # UVM configurations
 TEST ?= top_test
@@ -46,19 +47,25 @@ SEED_FLAGS ?=
 # Code Coverage
 COV_NAME ?= coverage_$(CUR_DATE)
 ENABLE_CODE_COV ?= false
+CODE_COV  ?= true
+
 COV_FLAGS   ?=
 
 # ================================  CONTROL  ==================================
 
 # Simulation mode switch
-ifeq ($(ENABLE_GUI),true)
-  GUI_FLAGS = -gui &
+# Simulation mode switch
+ifeq ($(GUI_MODE),true)
+	RUN_FLAGS = -gui &
 endif
 
-# Code Coverage switch
-ifeq ($(ENABLE_CODE_COV),true)
-  COV_FLAGS = 
+# Code Coverage switchs
+# Este comando ira en Xelab, especificado en la pagina 147 y 158 vivado
+ifeq ($(CODE_COV),true)
+# comando para guardar la covertura  cc, con el cov_db_dir creo la carpeta y con cov_dv_name creo el grupo donde estaran todos los files
+	COV_FLAGS += -cc_type sbct -cov_db_dir $(RUN_DIR)/coverage_r -cov_db_name coverage_db
 endif
+
 
 # Command to run simv with correct seed option [auto|fixed]
 ifeq ($(SEED_MODE),auto)
@@ -76,10 +83,13 @@ SVE = -f $(UVM_DIR)/sve.f
 # UVCs
 UVCS = -f $(UVM_DIR)/gpio_uvc.f
 
+# DPI
+
+DPI_LIB = $(DPI_DIR)/external.so
 # Vivado XVLOG/XELAB/XSIM/XCRG options
 FILES = $(UVCS) $(RTL_FILES) $(SVE)
 
-XVLOG_FLAGS = -sv $(XVLOG_DEFINES) $(FILES) \
+XVLOG_FLAGS = -sv $(XVLOG_DEFINES) $(FILES) $(DPI_FILE) \
 			  -work work \
 			  -L uvm \
 			  -log $(LOGS_DIR)/$(CUR_DATE)_compile.log
@@ -88,6 +98,7 @@ XELAB_FLAGS = tb -debug all \
               -s work.tb \
 			  -mt 10 \
 			  -timescale 1ns/100ps \
+			  $(COV_FLAGS) \
 			  -override_timeunit -override_timeprecision \
 			  -L work -L xil_defaultlib -L uvm \
 			  -L xpm -L unisims_ver -L unimacro_ver -L secureip \
@@ -158,6 +169,7 @@ vars: ## Print Makefile variables
 	@echo "WDB_DIR     = $(WDB_DIR)"
 	@echo "TCL_DIR     = $(TCL_DIR)"
 	@echo "RTL_DIR     = $(RTL_DIR)"
+	@echo "DPI_DIR     = $(DPI_DIR)"
 	@echo ""
 	@echo -e "$(C_ORA)UVM variables...$(NC)"
 	@echo "TEST        = $(TEST)"
@@ -196,16 +208,22 @@ wave: ## Open waveform
 	cd $(RUN_DIR) && xsim $(WAVE_FLAGS)
 #______________________________________________________________________________
 
+#xcrg necesita saber la ruta de la cobertura para ser leida 
 .PHONY: coverage
-coverage: ## Runs XCRG coverage
-	@echo -e "$(C_ORA)Running XCRG code coverage report$(NC)"
-	@mkdir -p $(COV_DIR)
-	cd $(RUN_DIR) && xcrg $(XCRG_FLAGS)
-	
+coverage: ## Run Coverage 
+	@echo -e "$(C_ORA)Running Coverage $(NC)"
+	mkdir -p $(RUN_DIR)/report_r/codeCoverageReport
+	cd $(RUN_DIR) && xcrg -cov_db_dir $(RUN_DIR)/coverage_r -cov_db_name coverage_db -cc_fullfile -report_dir $(RUN_DIR)/report_r -report_format html
+#______________________________________________________________________________
+
 .PHONY: open-coverage
-open-coverage: ## Opens coverage report
-	@echo -e "$(C_ORA)Opening coverage report$(NC)"
-	cd $(RUN_DIR) && firefox 
+open-coverage: ## Open with Firefox
+	firefox $(RUN_DIR)/report_r/functionalCoverageReport/dashboard.html
+
+.PHONY: clean
+clean: ## Remove all simulation files
+	@echo -e "$(C_ORA)Removing all simulation files$(NC)"
+	rm -rf $(RUN_DIR) $(DPI_DIR)/*.ocle
 #______________________________________________________________________________
 
 .PHONY: clean
@@ -219,6 +237,13 @@ clean-logs: ## Remove logs
 	@echo -e "$(C_ORA)Removing all logs files$(NC)"
 	rm -rf $(LOGS_DIR)/*.log
 #______________________________________________________________________________
+
+.PHONY: dpi
+dpi: ## Build DPI shared library
+	@echo -e "$(C_ORA)Compiling DPI-C++ library$(NC)"
+	mkdir -p $(RUN_DIR)
+	g++ -shared -fPIC $(DPI_DIR)/external.cpp -o $(DPI_LIB)
+
 
 .PHONY: help
 help: ## Display help message
