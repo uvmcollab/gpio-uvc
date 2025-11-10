@@ -8,12 +8,16 @@ class top_env extends uvm_env;
   top_env_config    m_config;
 
   gpio_uvc_config m_gpio_uvc_data_config;
-  gpio_uvc_agent  m_gpio_uvc_data_agent;
+  gpio_uvc_agent  m_gpio_uvc_data_agent; // handle a´un no creo el objeto. Esta clase que se llama environment, tengo un miembro de la clase que se llama "m...." y ocupo la build phase para construir el objeto
   
   gpio_uvc_config m_gpio_uvc_rst_config;
   gpio_uvc_agent  m_gpio_uvc_rst_agent;
 
   top_vsqr          vsqr;
+
+  // Falta declarar los miembros para el scoreboard, coverage
+  top_scoreboard m_scoreboard;
+  top_coverage m_coverage;
 
   extern function new(string name, uvm_component parent);
 
@@ -52,7 +56,7 @@ function void top_env::build_phase(uvm_phase phase);
   
   uvm_config_db #(gpio_uvc_config)::set(this, "m_gpio_uvc_data_agent", "config", m_gpio_uvc_data_config);
   m_gpio_uvc_data_agent = gpio_uvc_agent::type_id::create("m_gpio_uvc_data_agent", this);
-// Creo el handle tipo top_vsqr y lo instancio, el this es porque 
+// Creo el handle tipo gpi_uic_agent y lo instancio, el this es porque 
 //el environment es el padre
 
 
@@ -73,6 +77,14 @@ function void top_env::build_phase(uvm_phase phase);
 //el environment es el padre
 
 
+ // =========================== COVERAGE ==================================== //
+ // creamos los objetos declarados
+  m_coverage  = top_coverage::type_id::create("m_coverage",this);
+
+// =========================== SCOREBOARD==================================== //
+  m_scoreboard = top_scoreboard::type_id::create("m_scoreboard",this);
+
+// Creamos la secuencia virtual
 
   vsqr = top_vsqr::type_id::create("vsqr", this);
 
@@ -98,6 +110,10 @@ function void top_env::connect_phase(uvm_phase phase);
 // driver        monitor      coverage/scoreboard
 // │             │
 // DUT          observa señales
+
+m_gpio_uvc_data_agent.analysis_port.connect(m_scoreboard.gpio_data_imp_export);
+m_gpio_uvc_data_agent.analysis_port.connect(m_coverage.gpio_data_imp_export);
+//m_gpio_rst_sequencer.analysis_port.connect(m_scoreboard.gpio_rst_imp_export);
 
 endfunction : connect_phase
 
