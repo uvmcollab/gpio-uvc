@@ -34,6 +34,7 @@ task gpio_uvc_sequence_pulse::body();
   
   start_item(m_pin_deassert);
   finish_item(m_pin_deassert);
+  
 endtask : body
 
 `endif // GPIO_UVC_SEQUENCE_PULSE_SV
