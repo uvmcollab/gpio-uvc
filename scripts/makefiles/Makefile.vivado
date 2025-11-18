@@ -227,12 +227,6 @@ clean: ## Remove all simulation files
 #______________________________________________________________________________
 
 .PHONY: clean
-clean: ## Remove all simulation files
-	@echo -e "$(C_ORA)Removing all simulation files$(NC)"
-	rm -rf $(RUN_DIR)
-#______________________________________________________________________________
-
-.PHONY: clean
 clean-logs: ## Remove logs
 	@echo -e "$(C_ORA)Removing all logs files$(NC)"
 	rm -rf $(LOGS_DIR)/*.log
@@ -243,7 +237,6 @@ dpi: ## Build DPI shared library
 	@echo -e "$(C_ORA)Compiling DPI-C++ library$(NC)"
 	mkdir -p $(RUN_DIR)
 	g++ -shared -fPIC $(DPI_DIR)/external.cpp -o $(DPI_LIB)
-
 
 .PHONY: help
 help: ## Display help message
