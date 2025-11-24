@@ -12,21 +12,22 @@ module tb;
   always #(CLK_PERIOD / 2) clk_i = ~clk_i;
 
   // Interface
-  gpio_uvc_if gpio_uvc_data_vif (clk_i);
-  gpio_uvc_if gpio_uvc_rst_vif  (clk_i);
+  gpio_uvc_if port_rst_vif  (clk_i);
+
+
 
   // DUT Instantiation
-  buffer dut (
+  adder dut (
     .clk_i (clk_i),
-    .rst_i (gpio_uvc_rst_vif.gpio_pin[0]),
-    .d_i   (gpio_uvc_data_vif.gpio_pin),
-    .q_o   ()
+    .rst_i (port_rst_vif.gpio_pin[0]),
+    .a_i   (),
+    .b_i   (),
+    .sum_o  ()
   );
 
   initial begin
     $timeformat(-12, 0, "ps", 10);
-    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_gpio_uvc_data_agent", "vif", gpio_uvc_data_vif );
-    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_gpio_uvc_rst_agent", "vif", gpio_uvc_rst_vif );  
+    uvm_config_db #(virtual gpio_uvc_if)::set(null, "uvm_test_top.m_env.m_port_rst_agent", "vif", port_rst_vif );
     run_test();
   end
 
