@@ -70,7 +70,7 @@ endif
 # ==============================  TOOLS SETUP  ================================
 
 # Files
-RTL_FILES = $(RTL_DIR)/buffer.sv
+RTL_FILES = $(RTL_DIR)/adder.sv
 SVE = -f $(UVM_DIR)/sve.f
 
 # UVCs
