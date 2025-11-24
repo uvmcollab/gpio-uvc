@@ -12,10 +12,10 @@ class top_test_vseq extends uvm_sequence;
 
 //  extern task gpio_uvc_seq();
 //  extern task gpio_uvc_rst();
-  extern task gpio_uvc_pulse_rst();
-  //extern task gpio_uvc_file(string filename);
+  extern task port_rst_seq();
+  extern task port_a_seq(string filename);
   extern task body();
-  constraint iter_c {iter inside {[1 : 100]};}
+  constraint iter_c {iter inside {[1 : 2]};}
 endclass : top_test_vseq
 
 
@@ -77,7 +77,7 @@ endfunction : new
 
 // endtask : gpio_uvc_rst
 
-task top_test_vseq::gpio_uvc_pulse_rst();
+task top_test_vseq::port_rst_seq();
 gpio_uvc_sequence_pulse seq;
 seq = gpio_uvc_sequence_pulse::type_id::create("seq");
 
@@ -95,26 +95,26 @@ if (! seq.randomize() with {
      `uvm_fatal(get_name(), "Failed to randomize sequence")
    end
   seq.start(p_sequencer.m_port_rst_sequencer);
-endtask: gpio_uvc_pulse_rst
+endtask: port_rst_seq
 
-//  task top_test_vseq::gpio_uvc_file(string filename);
-//  gpio_uvc_sequence_from_file seq;
-//  seq = gpio_uvc_sequence_from_file::type_id::create("seq");
-//  seq.m_file_name = {`GIT_DIR, filename};
-//  seq.start(p_sequencer.m_gpio_data_sequencer);
-//  endtask: gpio_uvc_file
+  task top_test_vseq::port_a_seq(string filename);
+  gpio_uvc_sequence_from_file seq;
+  seq = gpio_uvc_sequence_from_file::type_id::create("seq");
+  seq.m_file_name = {`GIT_DIR, filename};
+  seq.start(p_sequencer.m_port_a_sequencer);
+  endtask: port_a_seq
 
 
 task top_test_vseq::body();
   //gpio_uvc_rst();
-  gpio_uvc_pulse_rst();
+  port_rst_seq();
   // Initial delay
   #(200ns);
 
-//  repeat (1) begin
-//    //gpio_uvc_seq();
-//    gpio_uvc_file("/sv/seqlib/sample.seq");
-//  end
+  repeat (iter) begin
+    //gpio_uvc_seq();
+    port_a_seq("/sv/seqlib/sample.seq");
+  end
 
   // Drain time 
   #(1000ns);
