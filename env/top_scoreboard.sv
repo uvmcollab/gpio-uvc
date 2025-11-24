@@ -1,12 +1,28 @@
 `ifndef TOP_SCOREBOARD_SV
 `define TOP_SCOREBOARD_SV
 
+// define golden model for GPIO UVC scoreboard
+import "DPI-C" context function int sum(
+  int a,
+  int b
+);
+
+
 class top_scoreboard extends uvm_scoreboard;
 
   `uvm_component_utils(top_scoreboard)
 
-  `uvm_analysis_imp_decl(_gpio_data)
-  uvm_analysis_imp_gpio_data #(gpio_uvc_sequence_item,top_scoreboard) gpio_data_imp_export;
+  `uvm_analysis_imp_decl(_port_a)
+  uvm_analysis_imp_port_a #(gpio_uvc_sequence_item,top_scoreboard) port_a_imp_export;
+
+
+  `uvm_analysis_imp_decl(_port_b)
+  uvm_analysis_imp_port_b #(gpio_uvc_sequence_item,top_scoreboard) port_b_imp_export;
+
+
+  `uvm_analysis_imp_decl(_port_c)
+  uvm_analysis_imp_port_c #(gpio_uvc_sequence_item,top_scoreboard) port_c_imp_export;
+
 
   // Statistics
   int unsigned m_num_passed = 0;
@@ -14,13 +30,19 @@ class top_scoreboard extends uvm_scoreboard;
 
   // Queue to store data
   gpio_uvc_sequence_item m_a_queue[$];
+  gpio_uvc_sequence_item m_b_queue[$];
+  gpio_uvc_sequence_item m_c_queue[$];
 
   extern function new(string name, uvm_component parent);
 
   extern function void build_phase(uvm_phase phase);
   extern task run_phase(uvm_phase phase);
   extern function void report_phase(uvm_phase phase);
-  extern function void write_gpio_data(input gpio_uvc_sequence_item t);
+ // Analysis write port implementation
+ extern function void write_port_a(input gpio_uvc_sequence_item t);
+ extern function void write_port_b(input gpio_uvc_sequence_item t);
+ extern function void write_port_c(input gpio_uvc_sequence_item t);
+
   extern function int ref_model(input gpio_uvc_sequence_item trans_A, gpio_uvc_sequence_item trans_B);
 
 endclass : top_scoreboard
@@ -28,38 +50,73 @@ endclass : top_scoreboard
 
 function top_scoreboard::new(string name, uvm_component parent);
   super.new(name, parent);
+  m_num_passed = 0;
+  m_num_failed = 0;
 endfunction : new
 
 
 function void top_scoreboard::build_phase(uvm_phase phase);
   // Implementation Export
-  gpio_data_imp_export = new("gpio_data_imp_export", this);
+  port_a_imp_export = new("port_a_imp_export", this);
+  port_b_imp_export = new ("port_b_imp_export",this);
+  port_c_imp_export = new ("port_c_imp_export",this);
 endfunction : build_phase
 
 
-task top_scoreboard::run_phase(uvm_phase phase);
-  // Variables
-  string s;
-
-  // Main scoreboard loop
-  // forever begin
-  //   wait(m_a_queue.size() >= 2);
-  //   last_index = m_a_queue.size() - 1;
-  // end
-
-endtask : run_phase
-
-function int top_scoreboard::ref_model(input gpio_uvc_sequence_item trans_A, gpio_uvc_sequence_item trans_B);
-  return (trans_A.m_gpio_pin[7:0] + trans_B.m_gpio_pin[7:0]);
-endfunction : ref_model
-
-
-function void top_scoreboard::write_gpio_data(input gpio_uvc_sequence_item t);
+function void top_scoreboard::write_port_a(input gpio_uvc_sequence_item t);
   gpio_uvc_sequence_item received_trans;
   received_trans = gpio_uvc_sequence_item::type_id::create("received_trans");
   received_trans.do_copy(t);
   m_a_queue.push_back(received_trans);
-endfunction : write_gpio_data
+endfunction : write_port_a
+
+function void top_scoreboard::write_port_b(input gpio_uvc_sequence_item t);
+  gpio_uvc_sequence_item received_trans;
+  received_trans = gpio_uvc_sequence_item::type_id::create("received_trans");
+  received_trans.do_copy(t);
+  m_b_queue.push_back(received_trans);
+endfunction : write_port_b
+
+function void top_scoreboard::write_port_c(input gpio_uvc_sequence_item t);
+  gpio_uvc_sequence_item received_trans;
+  received_trans = gpio_uvc_sequence_item::type_id::create("received_trans");
+  received_trans.do_copy(t);
+  m_c_queue.push_back(received_trans);
+endfunction : write_port_c
+
+task top_scoreboard::run_phase(uvm_phase phase);
+  // Variables
+
+  int expected_result;
+  int model_result;
+  // Main scoreboard loop
+   forever begin
+     wait(m_c_queue.size() >= 2);
+    expected_result = ref_model(m_a_queue[$], m_b_queue[$]);
+    model_result = sum(m_a_queue[$].m_gpio_pin[7:0], m_b_queue[$].m_gpio_pin[7:0]);
+   
+   if ((expected_result == m_c_queue[$].m_gpio_pin[7:0]) & (model_result == m_c_queue[$].m_gpio_pin[7:0])) begin
+      m_num_passed++;
+              `uvm_info(get_type_name(), $sformatf("PASS:  (Port A = %d, Port B = %d, Sum_dut= %d,Expect result=%d, Golden model=%0d)",
+                                                   m_a_queue[$].m_gpio_pin,m_b_queue[$].m_gpio_pin,
+                                                   m_c_queue[$].m_gpio_pin,expected_result, model_result), UVM_LOW)
+   end else begin
+    m_num_failed++;
+                  `uvm_info(get_type_name(), $sformatf("FAIL:  (Port A = %d, Port B = %d, Sum_dut= %d,Expect result=%d, Golden model=%0d)",
+                                                   m_a_queue[$].m_gpio_pin,m_b_queue[$].m_gpio_pin,
+                                                   m_c_queue[$].m_gpio_pin,expected_result, model_result), UVM_LOW)
+  
+   end
+   
+  m_c_queue.pop_front();
+   end
+
+endtask : run_phase
+
+function int top_scoreboard::ref_model(input gpio_uvc_sequence_item trans_A, gpio_uvc_sequence_item trans_B);
+  return (trans_A.m_gpio_pin[7:0] + trans_B.m_gpio_pin[7:0]) & 'd255 ;
+endfunction : ref_model
+
 
 
 function void top_scoreboard::report_phase(uvm_phase phase);

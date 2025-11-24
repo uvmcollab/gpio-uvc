@@ -13,9 +13,12 @@ class top_test_vseq extends uvm_sequence;
 //  extern task gpio_uvc_seq();
 //  extern task gpio_uvc_rst();
   extern task gpio_uvc_pulse_rst();
-  extern task gpio_uvc_file(string filename);
+//  extern task gpio_uvc_file(string filename);
+  extern task port_a_seq_file (string filename);
+  extern task port_b_seq_file (string filename);
+
   extern task body();
-  constraint iter_c {iter inside {[1 : 100]};}
+  constraint iter_c {iter inside {[1 : 4]};}
 endclass : top_test_vseq
 
 
@@ -85,7 +88,8 @@ if (! seq.randomize() with {
     m_pin_assert.m_gpio_pin == 1'b1;
     m_pin_assert.m_trans_type == GPIO_UVC_ITEM_SYNC;
     m_pin_assert.m_delay_enable == GPIO_UVC_ITEM_DELAY_OFF;
-    m_pin_assert.m_align_type == GPIO_UVC_ITEM_ALIGN_TYPE_RISING;    
+    m_pin_assert.m_align_type == GPIO_UVC_ITEM_ALIGN_TYPE_RISING;  
+
     m_pin_deassert.m_gpio_pin == 1'b0;
     m_pin_deassert.m_trans_type == GPIO_UVC_ITEM_SYNC;
     m_pin_deassert.m_delay_enable == GPIO_UVC_ITEM_DELAY_OFF;  
@@ -94,15 +98,23 @@ if (! seq.randomize() with {
          }) begin
      `uvm_fatal(get_name(), "Failed to randomize sequence")
    end
-  seq.start(p_sequencer.m_gpio_rst_sequencer);
+  seq.start(p_sequencer.m_port_rst_sequencer);
 endtask: gpio_uvc_pulse_rst
 
-  task top_test_vseq::gpio_uvc_file(string filename);
+  task top_test_vseq::port_a_seq_file(string filename);
   gpio_uvc_sequence_from_file seq;
   seq = gpio_uvc_sequence_from_file::type_id::create("seq");
   seq.m_file_name = {`GIT_DIR, filename};
-  seq.start(p_sequencer.m_gpio_data_sequencer);
-  endtask: gpio_uvc_file
+  seq.start(p_sequencer.m_port_a_sequencer);
+  endtask: port_a_seq_file
+
+  task top_test_vseq::port_b_seq_file(string filename);
+  gpio_uvc_sequence_from_file seq;
+  seq = gpio_uvc_sequence_from_file::type_id::create("seq");
+  seq.m_file_name = {`GIT_DIR, filename};
+  seq.start(p_sequencer.m_port_a_sequencer);
+  endtask: port_b_seq_file
+
 
 
 task top_test_vseq::body();
@@ -111,10 +123,11 @@ task top_test_vseq::body();
   // Initial delay
   #(200ns);
 
-  repeat (1) begin
+  //repeat (1) begin
     //gpio_uvc_seq();
-    gpio_uvc_file("/sv/seqlib/sample.seq");
-  end
+   // port_a_seq_file("/sv/seqlib/sample.seq");
+   // port_b_seq_file("/sv/seqlib/sample.seq");
+  //end
 
   // Drain time 
   #(1000ns);
