@@ -27,6 +27,7 @@ SCRIPTS_DIR := $(UVM_DIR)/scripts
 WDB_DIR     := $(ROOT_DIR)/wdb
 TCL_DIR     := $(SCRIPTS_DIR)/vivado
 RTL_DIR     := $(GIT_DIR)/rtl
+DPI_DIR   := $(GIT_DIR)/dpi
 
 # UVM configurations
 TEST ?= top_test
@@ -72,6 +73,7 @@ endif
 # Files
 RTL_FILES = $(RTL_DIR)/adder.sv
 SVE = -f $(UVM_DIR)/sve.f
+DPI_FILE = $(DPI_DIR)/external.cpp
 
 # UVCs
 UVCS = -f $(UVM_DIR)/gpio_uvc.f
@@ -158,6 +160,7 @@ vars: ## Print Makefile variables
 	@echo "WDB_DIR     = $(WDB_DIR)"
 	@echo "TCL_DIR     = $(TCL_DIR)"
 	@echo "RTL_DIR     = $(RTL_DIR)"
+	@echo "DPI_DIR     = $(DPI_DIR)"
 	@echo ""
 	@echo -e "$(C_ORA)UVM variables...$(NC)"
 	@echo "TEST        = $(TEST)"
@@ -176,11 +179,16 @@ compile: ## Runs XVLOG compilation
 	@mkdir -p $(RUN_DIR) $(LOGS_DIR)
 	cd $(RUN_DIR) && xvlog $(XVLOG_FLAGS)
 #______________________________________________________________________________
+.PHONY: dpi
+dpi: ## Compiles DPI C++ file
+	@echo -e "$(C_ORA)Compiling DPI C++ files$(NC)"
+	cd $(RUN_DIR) && xsc $(DPI_FILE) -o dpi
+#______________________________________________________________________________
 
 .PHONY: elaborate
 elaborate: ## Runs XELAB elaboration
 	@echo -e "$(C_ORA)Elaborating UVM project$(NC)"
-	cd $(RUN_DIR) && xelab $(XELAB_FLAGS)
+	cd $(RUN_DIR) && xelab $(XELAB_FLAGS) -sv_lib dpi
 #______________________________________________________________________________
 
 .PHONY: sim
