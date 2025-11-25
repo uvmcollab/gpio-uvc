@@ -14,6 +14,7 @@ class top_test_vseq extends uvm_sequence;
 //  extern task gpio_uvc_rst();
   extern task port_rst_seq();
   extern task port_a_seq(string filename);
+  extern task port_b_seq(string filename);
   extern task body();
   constraint iter_c {iter inside {[1 : 2]};}
 endclass : top_test_vseq
@@ -104,6 +105,12 @@ endtask: port_rst_seq
   seq.start(p_sequencer.m_port_a_sequencer);
   endtask: port_a_seq
 
+  task top_test_vseq::port_b_seq(string filename);
+  gpio_uvc_sequence_from_file seq;
+  seq = gpio_uvc_sequence_from_file::type_id::create("seq");
+  seq.m_file_name = {`GIT_DIR, filename};
+  seq.start(p_sequencer.m_port_b_sequencer);
+  endtask: port_b_seq
 
 task top_test_vseq::body();
   //gpio_uvc_rst();
@@ -111,10 +118,13 @@ task top_test_vseq::body();
   // Initial delay
   #(200ns);
 
-  repeat (iter) begin
+  //repeat (iter) begin
     //gpio_uvc_seq();
+    fork 
     port_a_seq("/sv/seqlib/sample.seq");
-  end
+    port_b_seq("/sv/seqlib/sample.seq");
+    join
+  //end
 
   // Drain time 
   #(1000ns);
