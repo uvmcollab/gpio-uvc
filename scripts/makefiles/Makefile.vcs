@@ -20,10 +20,10 @@ CUR_DATE   := $(shell date +%Y-%m-%d_%H-%M-%S) # Guardar la fecha para cada simu
 GIT_DIR := $(shell git rev-parse --show-toplevel)#siempre tenemos el directorio root
 UVM_DIR := $(GIT_DIR)#Directorio UVM
 ROOT_DIR := $(CURDIR)# Directorio Actual = PWD
-RUN_DIR := $(ROOT_DIR)
+RUN_DIR := $(ROOT_DIR)/sim
 LOGS_DIR := $(ROOT_DIR)/logs
 #WDB_DIR := $(ROOT_DIR)/wdb
-COV_DIR := $(ROOT_DIR)/coverage
+COV_DIR := $(ROOT_DIR)/cov
 SCRIPTS_DIR := $(UVM_DIR)/scripts
 VERDI_DIR := $(SCRIPTS_DIR)/verdi
 RTL_DIR := $(GIT_DIR)/rtl
@@ -188,11 +188,16 @@ coverage: ## Create coverage report
 	@mkdir -p $(COV_DIR)
 	cd $(RUN_DIR) && urg $(URG_FLAGS)
 #______________________________________________________________________________
+
 .PHONY: clean
-clean: ## Remove logs
+clean: ## UVM: Remove all simulation files
+	@echo -e "$(C_ORA)UVM: Removing all simulation files$(NC)"
+	rm -rf $(RUN_DIR) $(LOGS_DIR) $(COV_DIR)
+#______________________________________________________________________________
+.PHONY: clean-logs
+clean-logs: ## Remove logs
 	@echo -e "$(C_ORA)Removing all logs files$(NC)"
-	rm -rf $(LOGS_DIR)/*
-	rm -rf coverage
+	rm -rf $(LOGS_DIR)
 	@echo -e "$(C_ORA)Runing simulation SEED =$(SEED)$(NC)"
 #______________________________________________________________________________
 .PHONY: compile-dpi
