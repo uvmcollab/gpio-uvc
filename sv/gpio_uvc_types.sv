@@ -2,7 +2,7 @@
 `define GPIO_UVC_TYPES_SV
 
 localparam int unsigned GPIO_UVC_MAX_WIDTH = 32;
-typedef bit [GPIO_UVC_MAX_WIDTH-1:0] gpio_uvc_data_t;
+typedef logic [GPIO_UVC_MAX_WIDTH-1:0] gpio_uvc_data_t;
 
 typedef enum {
   GPIO_UVC_ITEM_SYNC,
