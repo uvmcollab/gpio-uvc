@@ -44,14 +44,23 @@ task gpio_uvc_monitor::do_mon();
   // Main monitoring loop
   forever begin
     // Wait for any change on gpio_pin
+    if(m_config.is_active) begin
     @(vif.gpio_pin);
+    end else begin
+    @(vif.gpio_pin_passive);
+    end
     sample_and_report();
   end
 endtask : do_mon
 
 
 task gpio_uvc_monitor::sample_and_report();
+
+  if(m_config.is_active) begin
   m_trans.m_gpio_pin = vif.gpio_pin & m_config.get_mask();
+  end else begin
+  m_trans.m_gpio_pin = vif.gpio_pin_passive & m_config.get_mask();
+  end
   `uvm_info(get_type_name(), {"\n------ MONITOR (GPIO_UVC) ------\n", m_trans.convert2string()}, UVM_DEBUG)
   analysis_port.write(m_trans);
 endtask : sample_and_report

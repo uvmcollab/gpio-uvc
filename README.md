@@ -196,8 +196,8 @@ From the root directory run the following:
 export GIT_ROOT="$(git rev-parse --show-toplevel)"
 export UVM_WORK="$GIT_ROOT/work/uvm"
 mkdir -p "$UVM_WORK" && cd "$UVM_WORK"
-ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vivado Makefile
-ln -sf $GIT_ROOT/scripts/setup/setup_xilinx_eda.sh
+ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vcs Makefile
+ln -sf $GIT_ROOT/scripts/setup/setup_synopsys_eda.tcsh
 source setup_xilinx_eda.sh
 make
 ```
@@ -208,10 +208,12 @@ make
 setenv GIT_ROOT `git rev-parse --show-toplevel`
 setenv UVM_WORK $GIT_ROOT/work/uvm
 mkdir -p $UVM_WORK && cd $UVM_WORK
-ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vivado Makefile
-ln -sf $GIT_ROOT/scripts/setup/setup_xilinx_eda.tcsh
-source setup_xilinx_eda.tcsh
+ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vcs Makefile
+ln -sf $GIT_ROOT/scripts/setup/setup_synopsys_eda.tcsh
+source setup_synopsys_eda.tcsh
 make
+
+
 ```
 
 > [!IMPORTANT]

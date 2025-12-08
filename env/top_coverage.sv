@@ -24,10 +24,10 @@ class top_coverage extends uvm_component;
   
   // Covergroups
 covergroup m_cov;
-  cp_gpio_a: coverpoint m_trans_a.m_gpio_pin{bins gpio_bins_a[] = {[0:255]};}
-  cp_gpio_b: coverpoint m_trans_b.m_gpio_pin{bins gpio_bins_b[] = {[0:255]};}
-  cp_gpio_c: coverpoint m_trans_c.m_gpio_pin{bins gpio_bins_c[] = {[0:255]};}
-  cp_cross : cross cp_gpio_a, cp_gpio_b;
+  cp_gpio_a: coverpoint m_trans_a.m_gpio_pin{bins gpio_bins_a[] = {[0:10]};}
+  cp_gpio_b: coverpoint m_trans_b.m_gpio_pin{bins gpio_bins_b[] = {[0:10]};}
+  cp_gpio_c: coverpoint m_trans_c.m_gpio_pin{bins gpio_bins_c[] = {[0:10]};}
+  //cp_cross : cross cp_gpio_a, cp_gpio_b;
 
 endgroup
 

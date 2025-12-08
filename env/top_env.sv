@@ -85,7 +85,7 @@ function void top_env::build_phase(uvm_phase phase);
 
     // ========================== PORT C AGENT ========================== //
   m_port_c_config = gpio_uvc_config::type_id::create("m_port_b_config");
-  m_port_c_config.is_active = UVM_ACTIVE;
+  m_port_c_config.is_active = UVM_PASSIVE;
   m_port_c_config.gpio_width = 'd8;
   m_port_c_config.start_value = 'd0;
 

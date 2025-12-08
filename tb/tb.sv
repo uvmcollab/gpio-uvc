@@ -24,7 +24,7 @@ module tb;
     .rst_i (port_rst_vif.gpio_pin[0]),
     .a_i   (port_a_vif.gpio_pin[7:0]),
     .b_i   (port_b_vif.gpio_pin[7:0]),
-    .sum_o  (port_c_vif.gpio_pin[7:0])
+    .sum_o  (port_c_vif.gpio_pin_passive[7:0])
   );
 
   initial begin
