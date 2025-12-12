@@ -31,14 +31,14 @@ git commit -m "feat: add gpio_uvc as a submodule"
 The following directory structure is required to integrate the UVC:
 
 ```plain
-├── docs /                (Documentation)                     [Optional]
-├── dpi/                  (Direct Programming Interface)        [Optional]
+├── docs /                (Documentation)                      [Optional]
+├── dpi/                  (Direct Programming Interface)       [Optional]
 ├── env/
 ├── env/
-│   ├── top_env_config.sv (Environment configuration)           [Optional]
+│   ├── top_env_config.sv (Environment configuration)          [Optional]
 │   ├── top_env_pkg.sv    (Environment package)
 │   ├── top_env.sv        (Environment)   
-│   ├── top_scoreboard.sv (Scoreboard)                          [Optional]
+│   ├── top_scoreboard.sv (Scoreboard)                         [Optional]
 │   └── top_vsqr.sv       (Virtual sequencer)
 ├── scripts/
 │   ├── makefiles/
@@ -84,10 +84,10 @@ endpackage : top_test_pkg
 ```verilog
 
 task top_test_vseq::port_rst_seq();
-gpio_uvc_sequence_pulse seq;
-seq = gpio_uvc_sequence_pulse::type_id::create("seq");
+  gpio_uvc_sequence_pulse seq;
+  seq = gpio_uvc_sequence_pulse::type_id::create("seq");
 
-if (! seq.randomize() with { 
+  if (! seq.randomize() with { 
     m_pin_assert.m_gpio_pin == 1'b1;
     m_pin_assert.m_trans_type == GPIO_UVC_ITEM_SYNC;
     m_pin_assert.m_delay_enable == GPIO_UVC_ITEM_DELAY_OFF;
@@ -106,7 +106,7 @@ endtask: port_rst_seq
 **2. To drive ports A and B with random values using import text File:**
 
 ```verilog
-  task top_test_vseq::port_a_seq(string filename);
+task top_test_vseq::port_a_seq(string filename);
   gpio_uvc_sequence_from_file seq;
   seq = gpio_uvc_sequence_from_file::type_id::create("seq");
   seq.m_file_name = {`GIT_DIR, filename};
@@ -118,7 +118,7 @@ endtask: port_rst_seq
   seq = gpio_uvc_sequence_from_file::type_id::create("seq");
   seq.m_file_name = {`GIT_DIR, filename};
   seq.start(p_sequencer.m_port_b_sequencer);
-  endtask: port_b_seq
+endtask: port_b_seq
 ```
 
 The format of the text file is:
@@ -166,7 +166,6 @@ task top_test_vseq::body();
   #(1000ns);
 
 endtask : body
-
 ```
 
 ## Testing
@@ -179,16 +178,6 @@ example of how to use the UVC.
 ## Setup
 
 From the root directory run the following:
-
-> [!IMPORTANT]
-> Before running the following commands, make sure your are inside a Git repository.
-> If not, you can initialize one with:
->
-> ```bash
-> git init --initial-branch=main
-> ```
->
-> Alternatively, create a new GitHub repository and place these files inside it.
 
 ### For bash
 
@@ -212,9 +201,4 @@ ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vcs Makefile
 ln -sf $GIT_ROOT/scripts/setup/setup_synopsys_eda.tcsh
 source setup_synopsys_eda.tcsh
 make
-
-
 ```
-
-> [!IMPORTANT]
-> Don’t forget to **source** the `settings64.sh` script to enable access to the Vivado tools.
