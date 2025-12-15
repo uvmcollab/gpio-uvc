@@ -14,32 +14,26 @@ class top_coverage extends uvm_component;
   `uvm_analysis_imp_decl(_port_c)
   uvm_analysis_imp_port_c #(gpio_uvc_sequence_item, top_coverage) port_c_imp_export;
 
-
-
   // Queue to store data
   gpio_uvc_sequence_item m_trans_a;
   gpio_uvc_sequence_item m_trans_b;
   gpio_uvc_sequence_item m_trans_c;
 
-  
   // Covergroups
-covergroup m_cov;
-  cp_gpio_a: coverpoint m_trans_a.m_gpio_pin{bins gpio_bins_a[] = {[0:10]};}
-  cp_gpio_b: coverpoint m_trans_b.m_gpio_pin{bins gpio_bins_b[] = {[0:10]};}
-  cp_gpio_c: coverpoint m_trans_c.m_gpio_pin{bins gpio_bins_c[] = {[0:10]};}
-  //cp_cross : cross cp_gpio_a, cp_gpio_b;
-
-endgroup
-
+  covergroup m_cov;
+    cp_gpio_a: coverpoint m_trans_a.m_gpio_pin{bins gpio_bins_a[] = {[0:10]};}
+    cp_gpio_b: coverpoint m_trans_b.m_gpio_pin{bins gpio_bins_b[] = {[0:10]};}
+    cp_gpio_c: coverpoint m_trans_c.m_gpio_pin{bins gpio_bins_c[] = {[0:10]};}
+    //cp_cross : cross cp_gpio_a, cp_gpio_b;
+  endgroup
 
   extern function new(string name, uvm_component parent);
 
   extern function void build_phase(uvm_phase phase);
   extern function void report_phase(uvm_phase phase);
-    extern function void write_port_a(input gpio_uvc_sequence_item t);
+  extern function void write_port_a(input gpio_uvc_sequence_item t);
   extern function void write_port_b(input gpio_uvc_sequence_item t);
   extern function void write_port_c(input gpio_uvc_sequence_item t);
-
 
 endclass : top_coverage
 

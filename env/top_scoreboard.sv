@@ -81,7 +81,6 @@ function void top_scoreboard::write_port_c(input gpio_uvc_sequence_item t);
 endfunction : write_port_c
 
 
-
 task top_scoreboard::run_phase(uvm_phase phase);
   // Variables
 
@@ -110,9 +109,8 @@ task top_scoreboard::run_phase(uvm_phase phase);
   m_c_queue.pop_front();
   end
 
-
-
 endtask : run_phase
+
 
 function int top_scoreboard::ref_model(input gpio_uvc_sequence_item trans_A,
                                        gpio_uvc_sequence_item trans_B);

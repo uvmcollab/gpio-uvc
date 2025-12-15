@@ -115,7 +115,6 @@ function void top_env::connect_phase(uvm_phase phase);
   vsqr.m_port_b_sequencer = m_port_b_agent.m_sequencer;
   vsqr.m_port_c_sequencer = m_port_c_agent.m_sequencer;
 
-
   // ========================= SCOREBOARD CONNECTIONS ========================= //
   m_port_a_agent.analysis_port.connect(m_scoreboard.port_a_imp_export);
   m_port_b_agent.analysis_port.connect(m_scoreboard.port_b_imp_export);
