@@ -20,9 +20,11 @@ class gpio_uvc_sequence_item extends uvm_sequence_item;
   extern function void do_print(uvm_printer printer);
   extern function string convert2string();
 
+  constraint c_trans_type {soft m_trans_type == GPIO_UVC_ITEM_SYNC;}
+  constraint c_delay_enable {soft m_delay_enable == GPIO_UVC_ITEM_DELAY_OFF;}
   constraint c_delay_duration_ps {soft m_delay_duration_ps inside {[1_000 : 10_000]};}
   constraint c_delay_cycles {soft m_delay_cycles inside {[1 : 10]};}
-  //constraint c_align_type {soft m_align_type inside {[0:1]};}
+  constraint c_align_type {soft m_align_type == GPIO_UVC_ITEM_ALIGN_TYPE_RISING;}
 
 endclass : gpio_uvc_sequence_item
 
