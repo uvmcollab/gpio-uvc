@@ -31,7 +31,7 @@ function void gpio_uvc_sequence_from_file::read_from_file();
   string delay_enable_str;
   string align_type_str;
   int    delay_duration;
-  int delay_cycles;
+  int    delay_cycles;
 
   file = $fopen(m_file_name, "r");
   if (!file) begin
@@ -40,7 +40,8 @@ function void gpio_uvc_sequence_from_file::read_from_file();
 
   while (!$feof(file)) begin
     trans  = gpio_uvc_sequence_item::type_id::create("trans");
-    result = $fscanf(file, "%d %s %s %s %d %d", gpio_val, trans_type_str, delay_enable_str,align_type_str, delay_duration, delay_cycles);
+    result = $fscanf(file, "%d %s %s %s %d %d", gpio_val, trans_type_str, delay_enable_str, align_type_str, delay_duration, delay_cycles);
+
     if (result == 6) begin
       trans.m_gpio_pin = gpio_val;
       trans.m_delay_duration_ps = delay_duration;
@@ -73,7 +74,6 @@ function void gpio_uvc_sequence_from_file::read_from_file();
         `uvm_fatal("PARSE ERROR", $sformatf("Failed to parse align_type"))
       end
 
-
       // Store the item in the queue
       m_queue_trans.push_back(trans);
 
@@ -83,9 +83,12 @@ function void gpio_uvc_sequence_from_file::read_from_file();
     end else begin
       `uvm_fatal("PARSE ERROR", $sformatf("Failed to parse line correctly"))
     end
+
   end
 
+  // Close file
   $fclose(file);
+
 endfunction : read_from_file
 
 task gpio_uvc_sequence_from_file::body();
