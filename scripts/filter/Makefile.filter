@@ -1,0 +1,37 @@
+##=============================================================================
+## [Filename]       Makefile.filter
+## [Project]        -
+## [Author]         Ciro Bermudez - cirofabian.bermudez@gmail.com
+## [Language]       GNU Makefile
+## [Created]        Dec 2025
+## [Modified]       -
+## [Description]    Makefile to filter logs
+## [Notes]          -
+## [Status]         stable
+## [Revisions]      -
+##=============================================================================
+
+# ===============================  VARIABLES  =================================
+FILTER_TOOL  := $(SCRIPTS_DIR)/filter/filter.py
+FILTER_DIR   := $(ROOT_DIR)/filter
+LOGS         := $(LOGS_DIR)/*_simv.log
+LOG_INPUT    := $(lastword $(sort $(wildcard $(LOGS))))
+
+# ================================  TARGETS  ==================================
+
+.PHONY: filter
+filter: ## FILTER: Filter logs
+	@echo -e "$(C_ORA)FILTER: Filtering logs$(NC)"
+	@mkdir -p $(FILTER_DIR)
+	$(FILTER_TOOL) -i $(LOG_INPUT) -o $(FILTER_DIR)/gpio_uvc_driver.log -s gpio_uvc_driver
+	$(FILTER_TOOL) -i $(LOG_INPUT) -o $(FILTER_DIR)/gpio_uvc_monitor.log -s gpio_uvc_monitor
+#   $(FILTER_TOOL) -i $(LOG_INPUT) -o $(FILTER_DIR)/top_env.log -s top_env
+#   $(FILTER_TOOL) -i $(LOG_INPUT) -o $(FILTER_DIR)/top_coverage.log -s top_coverage
+#   $(FILTER_TOOL) -i $(LOG_INPUT) -o $(FILTER_DIR)/top_scoreboard.log -s top_scoreboard
+#______________________________________________________________________________
+
+.PHONY: clean-filter
+clean-filter: ## FILTER: Remove filter logs
+	@echo -e "$(C_ORA)FILTER: removing filter logs$(NC)"
+	rm -rf $(FILTER_DIR)
+#______________________________________________________________________________
