@@ -60,6 +60,7 @@ The following directory structure is required to integrate the UVC:
 ```
 
 ### Step-by-Step
+
 **Import `gpio_uvc_pkg`**.
 In both `top_env_pkg.sv` and `top_test_pkg.sv`, import `gpio_uvc_pkg` after the `uvm_pkg` to make
 the UVC component available.
@@ -103,6 +104,7 @@ task top_test_vseq::port_rst_seq();
   seq.start(p_sequencer.m_port_rst_sequencer);
 endtask: port_rst_seq
 ```
+
 **2. To drive ports A and B with random values using import text File:**
 
 ```verilog
@@ -128,23 +130,23 @@ The format of the text file is:
 4   GPIO_UVC_ITEM_ASYNC GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING   100_000  10_000    
 9   GPIO_UVC_ITEM_ASYNC GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING   100_000  10_000 
 7   GPIO_UVC_ITEM_ASYNC GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING   100_000  10_000 
-10  GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING  10  10  
-9   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING  10  10  
-8   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000  1_000  
-7   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000  1_000  
-250 GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000  1_000  
-255 GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000  1_000  
-0   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000  1_000  
+10  GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING   10       10  
+9   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_ON GPIO_UVC_ITEM_ALIGN_TYPE_RISING   10       10  
+8   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000   1_000  
+7   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000   1_000  
+250 GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000   1_000  
+255 GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000   1_000  
+0   GPIO_UVC_ITEM_SYNC  GPIO_UVC_ITEM_DELAY_OFF GPIO_UVC_ITEM_ALIGN_TYPE_FALLING 10_000   1_000  
 ```
 
-| Column | Attribute        | Description/Format                                    |
-| ------ | ---------------- | ----------------------------------------------------- |
-| 1      | `m_gpio_pin`     | Decimal format                                        |
-| 2      | `m_trans_type`   | `GPIO_UVC_ITEM_SYNC` or `GPIO_UVC_ITEM_ASYNC`        |
-| 3      | `m_delay_enable` | `GPIO_UVC_ITEM_DELAY_ON` or `GPIO_UVC_ITEM_DELAY_OFF`        |
-| 4      | `align_type`     | `GPIO_UVC_ITEM_ALIGN_TYPE_RISING` or `GPIO_UVC_ITEM_ALIGN_TYPE_FALLING`        |
-| 5      | `delay_duration` | Decimal format |
-| 6      | `delay_cycles`   | Decimal format                                        |
+| Column | Attribute        | Description/Format                                                      |
+| ------ | ---------------- | ----------------------------------------------------------------------- |
+| 1      | `m_gpio_pin`     | Decimal format                                                          |
+| 2      | `m_trans_type`   | `GPIO_UVC_ITEM_SYNC` or `GPIO_UVC_ITEM_ASYNC`                           |
+| 3      | `m_delay_enable` | `GPIO_UVC_ITEM_DELAY_ON` or `GPIO_UVC_ITEM_DELAY_OFF`                   |
+| 4      | `align_type`     | `GPIO_UVC_ITEM_ALIGN_TYPE_RISING` or `GPIO_UVC_ITEM_ALIGN_TYPE_FALLING` |
+| 5      | `delay_duration` | Decimal format                                                          |
+| 6      | `delay_cycles`   | Decimal format                                                          |
 
 > Note: The text file must not contain any blank lines at the end.
 
@@ -154,17 +156,17 @@ In this case, we call the reset task, wait for a delay, and use a fork-join to r
 ```verilog
 task top_test_vseq::body();
   port_rst_seq();
+
   // Initial delay
   #(200ns);
-    fork 
+
+  fork 
     port_a_seq("/sv/seqlib/sample.seq");
     port_b_seq("/sv/seqlib/sample.seq");
-    join
-  //end
+  join
 
   // Drain time 
   #(1000ns);
-
 endtask : body
 ```
 
@@ -173,7 +175,6 @@ endtask : body
 This repository includes a simple adder as a DUT for testing the UVC
 functionality. Feel free to explore the files as they serve as a complete
 example of how to use the UVC.
-
 
 ## Setup
 
@@ -186,8 +187,8 @@ export GIT_ROOT="$(git rev-parse --show-toplevel)"
 export UVM_WORK="$GIT_ROOT/work/uvm"
 mkdir -p "$UVM_WORK" && cd "$UVM_WORK"
 ln -sf $GIT_ROOT/scripts/makefiles/Makefile.vcs Makefile
-ln -sf $GIT_ROOT/scripts/setup/setup_synopsys_eda.tcsh
-source setup_xilinx_eda.sh
+ln -sf $GIT_ROOT/scripts/setup/setup_synopsys_eda.sh
+source setup_synopsys_eda.sh
 make
 ```
 
